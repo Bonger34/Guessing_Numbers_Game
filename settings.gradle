@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Ys"
+rootProject.name = "Guessing_Numbers_Game"
 include ':app'
