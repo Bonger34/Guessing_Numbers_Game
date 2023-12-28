@@ -1,9 +1,14 @@
 package com.bonger.ys;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -13,17 +18,23 @@ import java.security.SecureRandom;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int n;
-    private int i = 1;
-    private boolean isTrue = false;
+    private int randomNumber;  //随机数
+    private int guessCount = 1;  //用户答题次数
+    private boolean isTrue = false; //是否答题正确
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // 创建通知渠道
+            NotificationChannel channel = new NotificationChannel("channel_id", "Channel Name", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
         SecureRandom secureRandom = new SecureRandom();
         String number = String.valueOf(secureRandom.nextInt(100) + 1);   //生成一个随机数
-        n = Integer.parseInt(number);   //将该随机数转化为整数类型
+        randomNumber = Integer.parseInt(number);   //将该随机数转化为整数类型
         Button proceed = findViewById(R.id.proceed);
         proceed.setOnClickListener(view -> {
             checkGuess();   //在按钮点击事件中调用检查猜测的方法
@@ -43,42 +54,55 @@ public class MainActivity extends AppCompatActivity {
         }
         int num = Integer.parseInt(text);   //再将值转化为整数类型
         if (num < 1 || num > 100) {
-            if (i == 1) {
+            if (guessCount == 1) {
                 Toast.makeText(this, "错误：你输入的数不在范围内", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "错误：你输入的数不在范围内，还剩" + (5 - i) + "次机会", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "错误：你输入的数不在范围内，还剩" + (5 - guessCount) + "次机会", Toast.LENGTH_SHORT).show();
             }
             return;
         }
-        if (num == n) {
-            Toast.makeText(this, "你猜对了，共猜了" + i + "次", Toast.LENGTH_SHORT).show();
+        if (num == randomNumber) {
+            Toast.makeText(this, "你猜对了，共猜了" + guessCount + "次", Toast.LENGTH_SHORT).show();
             isTrue = true;
             resetGame();    //猜对后自动重置
             return;
-        } else if (num < n) {
-            Toast.makeText(this, "你猜的数小了，还剩" + (5 - i) + "次机会", Toast.LENGTH_SHORT).show();
-        } else if (num > n) {
-            Toast.makeText(this, "你猜的数大了，还剩" + (5 - i) + "次机会", Toast.LENGTH_SHORT).show();
+        } else if (num < randomNumber) {
+            Toast.makeText(this, "你猜的数小了，还剩" + (5 - guessCount) + "次机会", Toast.LENGTH_SHORT).show();
+        } else if (num > randomNumber) {
+            Toast.makeText(this, "你猜的数大了，还剩" + (5 - guessCount) + "次机会", Toast.LENGTH_SHORT).show();
         }
-        if (i == 5 && !isTrue) {
-            Toast.makeText(this, "已回答" + i + "次，答题失败！\n正在下载原神……", Toast.LENGTH_SHORT).show();
+        if (guessCount == 5 && !isTrue) {
+            Toast.makeText(this, "已回答" + guessCount + "次，答题失败！\n正在下载原神……", Toast.LENGTH_SHORT).show();
             resetGame();
             Uri uri = Uri.parse("https://ys-api.mihoyo.com/event/download_porter/link/ys_cn/official/android_default");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         } else {
-            i++;    //增加猜测次数
+            guessCount++;    //增加猜测次数
         }
     }
 
     private void resetGame() {
         SecureRandom secureRandom = new SecureRandom();
         String number = String.valueOf(secureRandom.nextInt(100) + 1);   //再次生成一个随机数
-        n = Integer.parseInt(number);   //将该随机数转化为整数类型
-        i = 1;  //重置猜测次数
+        randomNumber = Integer.parseInt(number);   //将该随机数转化为整数类型
+        guessCount = 1;  //重置猜测次数
         isTrue = false; //重置猜中标记
         TextView textView = findViewById(R.id.editText);    //将EditText强制向下转化为TextView
         textView.setText("");
         Toast.makeText(this, "已重置", Toast.LENGTH_SHORT).show();
+        sendNotification(1, "重置成功");
     }
+
+    public void sendNotification(int notificationId, String text) {
+        // 创建NotificationCompat.Builder对象
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "channel_id")
+                .setContentText(text)
+                .setSmallIcon(R.mipmap.ic_launcher);
+        // 获取NotificationManager实例
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // 构建并发送通知
+        notificationManager.notify(notificationId, builder.build());
+    }
+
 }
