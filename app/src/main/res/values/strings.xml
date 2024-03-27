@@ -3,4 +3,8 @@
     <string name="input">请输入一个整数(1-100):</string>
     <string name="proceed">确定</string>
     <string name="reset">重置</string>
+    <string name="think">🤔</string>
+    <string name="dialog_about_message">版本：1.0\n作者：Bonger\n<a href="https://github.com/Bonger34/Guessing_Numbers_Game">Github</a></string>
+    <string name="start">Start</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -1,8 +1,14 @@
 package com.bonger.ys;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
+import androidx.fragment.app.DialogFragment;
 
+import android.app.AlertDialog;
+import android.app.Application;
+import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -10,9 +16,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.color.DynamicColors;
 
 import java.security.SecureRandom;
 
@@ -43,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
         reset.setOnClickListener(view -> {
             resetGame();    //通过重置按钮重置游戏
         });
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
     public void checkGuess() {
@@ -96,13 +109,56 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendNotification(int notificationId, String text) {
         // 创建NotificationCompat.Builder对象
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "channel_id")
-                .setContentText(text)
-                .setSmallIcon(R.mipmap.ic_launcher);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "channel_id").setContentText(text).setSmallIcon(R.mipmap.ic_launcher);
         // 获取NotificationManager实例
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // 构建并发送通知
         notificationManager.notify(notificationId, builder.build());
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.mune_about) {
+            about();
+        } else if (item.getItemId() == R.id.mune_setting) {
+            Toast.makeText(this, "点击了设置~", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "点击其他选项", Toast.LENGTH_SHORT).show();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public static class MyApplication extends Application {
+        @Override
+        public void onCreate() {
+            super.onCreate();
+            DynamicColors.applyToActivitiesIfAvailable(this);   //尝试使用莫奈主题
+        }
+    }
+
+    public static class AboutDialogFragment extends DialogFragment {
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.app_name)
+                    .setMessage(R.string.dialog_about_message);
+            return builder.create();
+        }
+
+    }
+
+    public void about() {
+        DialogFragment newFragment = new AboutDialogFragment();
+        newFragment.show(getSupportFragmentManager(), "about");
+    }
+
 
 }
