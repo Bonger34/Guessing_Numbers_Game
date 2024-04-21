@@ -1,17 +1,11 @@
 package com.bonger.ys;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
-import androidx.fragment.app.DialogFragment;
-
 import android.app.AlertDialog;
 import android.app.Application;
-import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -21,6 +15,10 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.material.color.DynamicColors;
 
@@ -124,9 +122,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.mune_about) {
+        if (item.getItemId() == R.id.menu_about) {
             about();
-        } else if (item.getItemId() == R.id.mune_setting) {
+        } else if (item.getItemId() == R.id.menu_setting) {
             Toast.makeText(this, "点击了设置~", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "点击其他选项", Toast.LENGTH_SHORT).show();
@@ -143,21 +141,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static class AboutDialogFragment extends DialogFragment {
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(R.string.app_name)
-                    .setMessage(R.string.dialog_about_message);
-            return builder.create();
-        }
-
-    }
-
     public void about() {
-        DialogFragment newFragment = new AboutDialogFragment();
-        newFragment.show(getSupportFragmentManager(), "about");
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.app_name)
+                .setMessage(R.string.dialog_about_message)
+                .setNeutralButton(R.string.GitHub, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Uri uri = Uri.parse("https://github.com/Bonger34/Guessing_Numbers_Game");
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
+                    }
+                });
+        builder.show();
     }
 
 
