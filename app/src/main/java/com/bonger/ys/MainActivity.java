@@ -5,7 +5,6 @@ import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -145,13 +144,10 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.app_name)
                 .setMessage(R.string.dialog_about_message)
-                .setNeutralButton(R.string.GitHub, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Uri uri = Uri.parse("https://github.com/Bonger34/Guessing_Numbers_Game");
-                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                        startActivity(intent);
-                    }
+                .setNeutralButton(R.string.GitHub, (dialog, which) -> {
+                    Uri uri = Uri.parse("https://github.com/Bonger34/Guessing_Numbers_Game");
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
                 });
         builder.show();
     }
