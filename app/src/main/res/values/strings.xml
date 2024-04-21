@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">猜数游戏</string>
-    <string name="input">请输入一个整数(1-100):</string>
+    <string name="input">请输入一个整数(1&#8211;100):</string>
     <string name="proceed">确定</string>
     <string name="reset">重置</string>
     <string name="think">🤔</string>
+    <string name="setting">设置</string>
+    <string name="about">关于</string>
     <string name="dialog_about_message">版本：1.0\n作者：Bonger</string>
     <string name="GitHub">GitHub</string>
     <string name="start">Start</string>
